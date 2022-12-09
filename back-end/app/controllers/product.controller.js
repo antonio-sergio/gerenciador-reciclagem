@@ -19,11 +19,12 @@ const getPagingData = (data, page, limit) => {
 
 // Create and Save a new Product
 exports.create = (req, res ) => {
-  if(req.body.name && req.body.price){
-    return Product.create({
-      name: req.body.name,
-      price: req.body.price,
-    })
+  const obj = {
+    name: req.body.name,
+    price: req.body.price
+  }
+  if(obj){
+    return Product.create(obj)
     .then((product) => {
         console.log(">> Created product: " + JSON.stringify(product, null, 4));
         return res.send(product);

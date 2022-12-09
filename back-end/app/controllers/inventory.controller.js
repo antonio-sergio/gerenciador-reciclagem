@@ -19,11 +19,12 @@ const getPagingData = (data, page, limit) => {
 
 // Create and Save a new Inventory
 exports.createInventory = (req, res) => {
-  if(req.body.product_id && req.body.quantity){
-    return Inventory.create({
-      product_id: req.body.product_id,
-      quantity: req.body.quantity,
-    })
+  const obj = {
+    product_id: req.body.product_id,
+    quantity: req.body.quantity,
+  }
+  if(obj){
+    return Inventory.create(obj)
     .then((inventory) => {
         console.log(">> Created Inventory: " + JSON.stringify(inventory, null, 4));
         return res.send(inventory);

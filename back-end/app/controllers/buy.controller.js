@@ -4,10 +4,11 @@ const Buy = db.buys;
 
 // Create and Save a new buy
 exports.createBuy = (req, res) => {
-  if(req.body.total_amount){
-    return Buy.create({
-      total_amount: req.body.total_amount,
-    })
+  const obj = {
+    total_amount: req.body.total_amount,
+  }
+  if(obj){
+    return Buy.create(obj)
     .then((buy) => {
         console.log(">> Created buy: " + JSON.stringify(buy, null, 4));
         return res.send(buy);
