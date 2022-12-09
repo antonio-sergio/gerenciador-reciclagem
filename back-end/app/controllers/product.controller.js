@@ -27,7 +27,8 @@ exports.create = (req, res ) => {
     return Product.create(obj)
     .then((product) => {
         console.log(">> Created product: " + JSON.stringify(product, null, 4));
-        return res.send(product);
+        res.statusMessage = 'Created product';
+        res.send(product).end();
     })
     .catch((err) => {
         console.log(">> Error while creating product: ", err);
