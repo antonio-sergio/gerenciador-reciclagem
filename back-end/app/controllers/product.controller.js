@@ -43,37 +43,17 @@ exports.create = (req, res ) => {
 
 
 // Retrieve all Products from the database.
-// exports.findAll = (req, res) => {
-  // const { page, size, title } = req.query;
-  // var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
-
-  // const { limit, offset } = getPagination(page, size);
-
-  // Produto.findAndCountAll({ where: condition, limit, offset })
-  //   .then(data => {
-  //     const response = getPagingData(data, page, limit);
-  //     res.send(response);
-  //   })
-  //   .catch(err => {
-  //     res.status(500).send({
-  //       message:
-  //         err.message || "Some error occurred while retrieving Products."
-  //     });
-  //   });
-  // const name = req.query.name;
-  // var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
-
-  // Product.findAll({ where: condition })
-  //   .then(data => {
-  //     res.send(data);
-  //   })
-  //   .catch(err => {
-  //     res.status(500).send({
-  //       message:
-  //         err.message || "Some error occurred while retrieving Products."
-  //     });
-  //   });
-// };
+exports.findAll = (req, res) => {
+  return Product.findAll()
+  .then((products) => {
+    console.log(">>success in getting the products"+ JSON.stringify(products, null, 4));
+    return res.send(products);
+  })
+  .catch((err) => {
+    console.log(">>Error while picking up the products");
+    res.send(err)
+  })
+};
 
 // Find a single Produto with an id
 // exports.findOne = (req, res) => {
