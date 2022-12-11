@@ -6,22 +6,20 @@ module.exports = app => {
     // Create a new sale
     router.post("/", sales.createSale);
   
-    // Retrieve all Tutorials
-    // router.get("/", products.findAll);;
+    // Retrieve all Sales
+    router.get("/", sales.findAll);;
   
-    // Retrieve all published Tutorials
+    // Retrieve a single Sale with id
+    router.get("/:id", sales.findOne);
   
-    // Retrieve a single Tutorial with id
-    // router.get("/:id", products.findOne);
+    // Update a Sale with id
+    router.put("/:id", sales.update);
   
-    // Update a Tutorial with id
-    // router.put("/:id", products.update);;
+    // Delete a Sale with id
+    router.delete("/:id", sales.delete);
   
-    // Delete a Tutorial with id
-    // router.delete("/:id", products.delete);
+    // Delete all Sales
+    router.delete("/", sales.deleteAll);
   
-    // Create a new Tutorial
-    // router.delete("/", products.deleteAll);
-  
-    app.use('/api/sale', router);
+    app.use('/api/sales', router);
   };

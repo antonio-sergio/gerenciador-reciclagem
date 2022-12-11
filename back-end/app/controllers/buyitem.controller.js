@@ -13,7 +13,8 @@ exports.createBuyItem = (req, res) => {
     return BuyItem.create(obj)
     .then((buyitem) => {
         console.log(">> Created buyitem: " + JSON.stringify(buyitem, null, 4));
-        return res.send(buyitem);
+        res.statusMessage = 'Created BuyItem';
+        return res.send(buyitem).end();
     })
     .catch((err) => {
         console.log(">> Error while creating buyitem: ", err);
@@ -25,4 +26,99 @@ exports.createBuyItem = (req, res) => {
   }
 };
 
+// Retrieve all BuyItems from the database.
+exports.findAll = (req, res) => {
+  return BuyItem.findAll()
+  .then((buyitems) => {
+    res.statusMessage = 'Showing all BuyItems';
+    res.send(buyitems).end();
+  })
+  .catch((err) => {
+    console.log(">>Error while picking up the buy items");
+    res.send(err)
+  })
+};
 
+// Find a single BuyItem with an id
+exports.findOne = (req, res) => {
+  const id = req.params.id;
+
+  BuyItem.findByPk(id)
+    .then(buyitem => {
+      console.log(buyitem);
+      buyitem ? res.send(buyitem) : res.status(400).send("BuyItem not found for the given id")
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving BuyItem with id=" + id
+      });
+    });
+};
+
+// // Update a BuyItem by the id in the request
+exports.update = (req, res) => {
+  const id = req.params.id;
+
+  BuyItem.update(req.body, {
+    where: { id: id }
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "BuyItem was updated successfully."
+        });
+      } else {
+        res.send({
+          message: `Cannot update BuyItem with id=${id}. Maybe BuyItem was not found or req.body is empty!`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error updating BuyItem with id=" + id
+      });
+    });
+};
+
+
+// Delete a BuyItem with the specified id in the request
+exports.delete = (req, res) => {
+  const id = req.params.id;
+
+  BuyItem.destroy({
+    where: { id: id }
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: `BuyItem id ${id} was deleted successfully!`
+        });
+      } else {
+        res.send({
+          message: `Cannot delete BuyItem with id=${id}. Maybe BuyItem was not found!`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Could not delete BuyItem with id=" + id
+      });
+    });
+};
+
+// Delete all BuyItems from the database.
+exports.deleteAll = (req, res) => {
+  BuyItem.destroy({
+    where: {},
+    truncate: false
+  })
+    .then(nums => {
+      res.send({ message: `${nums} BuyItems were deleted successfully!` });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while removing all BuyItems."
+      });
+    });
+};

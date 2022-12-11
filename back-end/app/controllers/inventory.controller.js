@@ -27,11 +27,12 @@ exports.createInventory = (req, res) => {
     return Inventory.create(obj)
     .then((inventory) => {
         console.log(">> Created Inventory: " + JSON.stringify(inventory, null, 4));
+        res.statusMessage = 'Created inventory';
         return res.send(inventory);
     })
     .catch((err) => {
         console.log(">> Error while creating inventory: ", err);
-        res.send(err)
+        res.send(err).end();
     });
 
   }else{
@@ -39,118 +40,101 @@ exports.createInventory = (req, res) => {
   }
 };
 
-// Retrieve all Products from the database.
-// exports.findAll = (req, res) => {
-//   // const { page, size, title } = req.query;
-//   // var condition = title ? { title: { [Op.like]: `%${title}%` } } : null;
 
-//   // const { limit, offset } = getPagination(page, size);
 
-//   // Produto.findAndCountAll({ where: condition, limit, offset })
-//   //   .then(data => {
-//   //     const response = getPagingData(data, page, limit);
-//   //     res.send(response);
-//   //   })
-//   //   .catch(err => {
-//   //     res.status(500).send({
-//   //       message:
-//   //         err.message || "Some error occurred while retrieving Products."
-//   //     });
-//   //   });
-//   const name = req.query.name;
-//   var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
+// Retrieve all Inventory from the database.
+exports.findAll = (req, res) => {
+  return Inventory.findAll()
+  .then((inventory) => {
+    res.statusMessage = 'Showing all Inventorys';
+    res.send(inventory).end();
+  })
+  .catch((err) => {
+    console.log(">>Error while picking up the Inventorys");
+    res.send(err)
+  })
+};
 
-//   Product.findAll({ where: condition })
-//     .then(data => {
-//       res.send(data);
-//     })
-//     .catch(err => {
-//       res.status(500).send({
-//         message:
-//           err.message || "Some error occurred while retrieving Products."
-//       });
-//     });
-// };
+// Find a single Inventory with an id
+exports.findOne = (req, res) => {
+  const id = req.params.id;
 
-// // Find a single Produto with an id
-// exports.findOne = (req, res) => {
-//   const id = req.params.id;
+  Inventory.findByPk(id)
+    .then(inventory => {
+      console.log(inventory);
+      inventory ? res.send(inventory) : res.status(400).send("Inventory not found for the given id")
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error retrieving Inventory with id=" + id
+      });
+    });
+};
 
-//   Product.findByPk(id)
-//     .then(data => {
-//       res.send(data);
-//     })
-//     .catch(err => {
-//       res.status(500).send({
-//         message: "Error retrieving Produto with id=" + id
-//       });
-//     });
-// };
+// Update a Inventory by the id in the request
+exports.update = (req, res) => {
+  const id = req.params.id;
 
-// // Update a Produto by the id in the request
-// exports.update = (req, res) => {
-//   const id = req.params.id;
+  Inventory.update(req.body, {
+    where: { id: id }
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: "Inventory was updated successfully."
+        });
+      } else {
+        res.send({
+          message: `Cannot update Inventory with id=${id}. Maybe Inventory was not found or req.body is empty!`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Error updating Inventory with id=" + id
+      });
+    });
+};
 
-//   Product.update(req.body, {
-//     where: { id: id }
-//   })
-//     .then(num => {
-//       if (num == 1) {
-//         res.send({
-//           message: "Produto was updated successfully."
-//         });
-//       } else {
-//         res.send({
-//           message: `Cannot update Product with id=${id}. Maybe Produto was not found or req.body is empty!`
-//         });
-//       }
-//     })
-//     .catch(err => {
-//       res.status(500).send({
-//         message: "Error updating Product with id=" + id
-//       });
-//     });
-// };
+// Delete a Inventory with the specified id in the request
+exports.delete = (req, res) => {
+  const id = req.params.id;
 
-// // Delete a Produto with the specified id in the request
-// exports.delete = (req, res) => {
-//   const id = req.params.id;
+  Inventory.destroy({
+    where: { id: id }
+  })
+    .then(num => {
+      if (num == 1) {
+        res.send({
+          message: `Inventory id ${id} was deleted successfully!`
+        });
+      } else {
+        res.send({
+          message: `Cannot delete Inventory with id=${id}. Maybe Inventory was not found!`
+        });
+      }
+    })
+    .catch(err => {
+      res.status(500).send({
+        message: "Could not delete Inventory with id=" + id
+      });
+    });
+};
 
-//   Product.destroy({
-//     where: { id: id }
-//   })
-//     .then(num => {
-//       if (num == 1) {
-//         res.send({
-//           message: "Product was deleted successfully!"
-//         });
-//       } else {
-//         res.send({
-//           message: `Cannot delete Product with id=${id}. Maybe Produto was not found!`
-//         });
-//       }
-//     })
-//     .catch(err => {
-//       res.status(500).send({
-//         message: "Could not delete Product with id=" + id
-//       });
-//     });
-// };
-
-// // Delete all Products from the database.
-// exports.deleteAll = (req, res) => {
-//   Product.destroy({
-//     where: {},
-//     truncate: false
-//   })
-//     .then(nums => {
-//       res.send({ message: `${nums} Products were deleted successfully!` });
-//     })
-//     .catch(err => {
-//       res.status(500).send({
-//         message:
-//           err.message || "Some error occurred while removing all Products."
-//       });
-//     });
-// };
+// Delete all Inventorys from the database.
+exports.deleteAll = (req, res) => {
+  Inventory.destroy({
+    where: {},
+    truncate: false
+  })
+    .then(nums => {
+      res.send({ message: `${nums} Inventorys were deleted successfully!` });
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while removing all Inventorys."
+      });
+    });
+};
 
