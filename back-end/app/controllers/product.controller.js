@@ -71,6 +71,21 @@ exports.findOne = (req, res) => {
     });
 };
 
+exports.findByName = (req, res) => {
+  const name = req.query.name;
+  var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
+
+  Product.findAll({ where: condition })
+    .then(data => {
+      res.send(data);
+    })
+    .catch(err => {
+      res.status(500).send({
+        message:
+          err.message || "Some error occurred while retrieving products."
+      });
+    });
+}
 // Update a Product by the id in the request
 exports.update = (req, res) => {
   const id = req.params.id;

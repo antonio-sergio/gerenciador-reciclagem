@@ -11,7 +11,9 @@ module.exports = app => {
 
     // Retrieve a single Product with id
     router.get("/:id", products.findOne);
-  
+
+    //Retrieve product with name
+    router.get("/:name", products.findByName)
     // Update a Product with id
     router.put("/:id", products.update);;
   
