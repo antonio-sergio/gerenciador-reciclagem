@@ -1,7 +1,19 @@
 const db = require("../models");
 const Sale = db.sales;
 
+const getPagination = (page, size) => {
+  const limit = size ? +size : 10;
+  const offset = page ? page * limit : 0;
 
+  return { limit, offset };
+};
+const getPagingData = (data, page, limit) => {
+  const { count: totalSales, rows: sales } = data;
+  const currentPage = page ? +page : 0;
+  const totalPages = Math.ceil(totalSales / limit);
+
+  return { totalSales, sales, totalPages, currentPage };
+};
 // Create and Save a new Sale
 exports.createSale = (req, res) => {
   const obj = {
@@ -27,15 +39,22 @@ exports.createSale = (req, res) => {
 
 // Retrieve all Sales from the database.
 exports.findAll = (req, res) => {
-  return Sale.findAll()
-  .then((sales) => {
-    res.statusMessage = 'Showing all sales';
-    res.send(sales).end();
+  const { page, size, id } = req.query;
+  var condition = id ? { id: { [Op.like]: id } } : null;
+
+  const { limit, offset } = getPagination(page, size);
+  Sale.findAndCountAll({ where: condition, limit, offset })
+  .then(data => {
+    const response = getPagingData(data, page, limit);
+    res.statusMessage = 'Showing sales';
+    res.send(response);
   })
-  .catch((err) => {
-    console.log(">>Error while picking up the sales");
-    res.send(err)
-  })
+  .catch(err => {
+    res.status(500).send({
+      message:
+        err.message || "Some error occurred while retrieving sales."
+    });
+  });
 };
 
 // Find a single Sale with an id

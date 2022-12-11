@@ -1,6 +1,20 @@
 const db = require("../models");
 const Buy = db.buys;
+const Op = db.Sequelize.Op;
 
+const getPagination = (page, size) => {
+  const limit = size ? +size : 10;
+  const offset = page ? page * limit : 0;
+
+  return { limit, offset };
+};
+const getPagingData = (data, page, limit) => {
+  const { count: totalBuys, rows: buys } = data;
+  const currentPage = page ? +page : 0;
+  const totalPages = Math.ceil(totalBuys / limit);
+
+  return { totalBuys, buys, totalPages, currentPage };
+};
 
 // Create and Save a new buy
 exports.createBuy = (req, res) => {
@@ -26,15 +40,22 @@ exports.createBuy = (req, res) => {
 
 // Retrieve all Buys from the database.
 exports.findAll = (req, res) => {
-  return Buy.findAll()
-  .then((buys) => {
-    res.statusMessage = 'Showing all buys';
-    res.send(buys).end();
+  const { page, size, id } = req.query;
+  var condition = id ? { id: { [Op.like]: id } } : null;
+
+  const { limit, offset } = getPagination(page, size);
+  Buy.findAndCountAll({ where: condition, limit, offset })
+  .then(data => {
+    const response = getPagingData(data, page, limit);
+    res.statusMessage = 'Showing buys';
+    res.send(response);
   })
-  .catch((err) => {
-    console.log(">>Error while picking up the buys");
-    res.send(err)
-  })
+  .catch(err => {
+    res.status(500).send({
+      message:
+        err.message || "Some error occurred while retrieving buys."
+    });
+  });
 };
 
 // Find a single Buy with an id
@@ -118,3 +139,5 @@ exports.deleteAll = (req, res) => {
       });
     });
 };
+
+
