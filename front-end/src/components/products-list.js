@@ -38,11 +38,14 @@ const rows = [
 ];
 
 
+
+
 function AddProduct() {
     const [products, setProducts] = useState([]);
     const [currentProduct, setCurrentProduct] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(-1);
     const [searchName, setSearchName] = useState("");
+    const [agree, setAgree] = useState(false);
 
     const onChangeSearchName = (e) => {
         const searchName = e.target.value;
@@ -109,6 +112,7 @@ function AddProduct() {
             name: params.name,
             price: params.price
         }
+        console.log('produ', product);
         ProductDataService.update(
             params.id,
             product
@@ -119,6 +123,7 @@ function AddProduct() {
             .catch(e => {
               console.log(e);
             });
+        console.log('editado');
         };
     return (
         <>
@@ -159,7 +164,7 @@ function AddProduct() {
                                     console.log('row', row.row);
                                     setActiveProduct(row.row, row.id)
                                 }}
-                                edit={(row) => {
+                                processRowUpdate={(row) => {
                                     console.log('row dentro do compo', row);
                                     edit(row)
                                 }}
