@@ -5,6 +5,12 @@ import { Link } from 'react-router-dom';
 import Box from "@mui/material/Box";
 import { DataGrid } from "@mui/x-data-grid";
 import ProductDataService from "../services/product.service";
+import Button from '@mui/material/Button';
+import Dialog from '@mui/material/Dialog';
+import DialogActions from '@mui/material/DialogActions';
+import DialogContent from '@mui/material/DialogContent';
+import DialogContentText from '@mui/material/DialogContentText';
+import DialogTitle from '@mui/material/DialogTitle';
 
 const columns = [
     { field: "id", headerName: "ID", width: 90 },
@@ -25,27 +31,46 @@ const columns = [
 
 ];
 
-const rows = [
-    { id: 1, lastName: "Snow", firstName: "Jon", age: 35 },
-    { id: 2, lastName: "Lannister", firstName: "Cersei", age: 42 },
-    { id: 3, lastName: "Lannister", firstName: "Jaime", age: 45 },
-    { id: 4, lastName: "Stark", firstName: "Arya", age: 16 },
-    { id: 5, lastName: "Targaryen", firstName: "Daenerys", age: 15 },
-    { id: 6, lastName: "Melisandre", firstName: "null", age: 150 },
-    { id: 7, lastName: "Clifford", firstName: "Ferrara", age: 44 },
-    { id: 8, lastName: "Frances", firstName: "Rossini", age: 36 },
-    { id: 9, lastName: "Roxie", firstName: "Harvey", age: 65 }
-];
-
-
 
 
 function AddProduct() {
+
     const [products, setProducts] = useState([]);
     const [currentProduct, setCurrentProduct] = useState(null);
     const [currentIndex, setCurrentIndex] = useState(-1);
     const [searchName, setSearchName] = useState("");
-    const [agree, setAgree] = useState(false);
+    const [open, setOpen] = React.useState(false);
+    const [product, setProduct] = useState('');
+
+    const handleClickOpen = () => {
+        setOpen(true);
+    };
+
+    const refreshPage = () => {
+        window.location.reload(false);
+      }
+
+    const handleClose = (e) => {
+        const aux = e.target.value;
+        if (aux === 'agree') {
+            ProductDataService.update(
+                product.id,
+                product
+            )
+            .then(response => {
+                console.log(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+        } else {
+            refreshPage();
+            console.log('');
+            
+        }
+        refreshList();
+        setOpen(false);
+    };
 
     const onChangeSearchName = (e) => {
         const searchName = e.target.value;
@@ -66,11 +91,20 @@ function AddProduct() {
     }, [])
 
 
-
+    const retrieveProducts = () => {
+        ProducDataService.getAll()
+            .then(response => {
+                setProducts(response.data);
+            })
+            .catch(e => {
+                console.log(e);
+            });
+    }
     const refreshList = () => {
-        // retrieveProducts();
+        retrieveProducts();
         setCurrentIndex(-1);
-        setCurrentProduct(null)
+        setCurrentProduct(null);
+        console.log('atualizado');
     }
 
     const setActiveProduct = (product, index) => {
@@ -104,27 +138,20 @@ function AddProduct() {
     }
 
     const onProcessRowUpdateError = () => {
-        console.log('erro');
+        console.log('');
     }
 
-    const edit = (params) => {
+    const edit = async (params) => {
+        handleClickOpen();
+
         const product = {
+            id: params.id,
             name: params.name,
             price: params.price
         }
-        console.log('produ', product);
-        ProductDataService.update(
-            params.id,
-            product
-          )
-            .then(response => {
-              console.log(response.data);
-            })
-            .catch(e => {
-              console.log(e);
-            });
-        console.log('editado');
-        };
+        setProduct(product);
+
+    };
     return (
         <>
             <Suspense fallback="Loading...">
@@ -151,6 +178,27 @@ function AddProduct() {
                     </div>
                     <div className="col-md-6">
                         <h4>Products List</h4>
+                        <Dialog
+                            open={open}
+                            onClose={handleClose}
+                            aria-labelledby="alert-dialog-title"
+                            aria-describedby="alert-dialog-description"
+                        >
+                            <DialogTitle id="alert-dialog-title">
+                                {"Você deseja alterar os dados?"}
+                            </DialogTitle>
+                            {/* <DialogContent>
+                                <DialogContentText id="alert-dialog-description">
+                                    Você deseja alterar os dados?
+                                </DialogContentText>
+                            </DialogContent> */}
+                            <DialogActions>
+                                <Button onClick={e => handleClose(e)} value='disagree'>Descartar</Button>
+                                <Button onClick={e => handleClose(e)} value='agree' autoFocus>
+                                    Confirmar
+                                </Button>
+                            </DialogActions>
+                        </Dialog>
                         <Box sx={{ height: 400, width: "100%" }}>
                             <DataGrid
                                 rows={products}
@@ -168,7 +216,7 @@ function AddProduct() {
                                     console.log('row dentro do compo', row);
                                     edit(row)
                                 }}
-                                onProcessRowUpdateError = {onProcessRowUpdateError}
+                                onProcessRowUpdateError={onProcessRowUpdateError}
                             />
                         </Box>
                         <ul className="list-group">
