@@ -11,6 +11,11 @@ import DialogActions from '@mui/material/DialogActions';
 import DialogContent from '@mui/material/DialogContent';
 import DialogContentText from '@mui/material/DialogContentText';
 import DialogTitle from '@mui/material/DialogTitle';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
+import CardMedia from '@mui/material/CardMedia';
+import Typography from '@mui/material/Typography';
+import { CardActionArea } from '@mui/material';
 
 const columns = [
     { field: "id", headerName: "ID", width: 90 },
@@ -73,6 +78,7 @@ function AddProduct() {
     };
 
     const onChangeSearchName = (e) => {
+        console.log('name no onchange', e.target.value);
         const searchName = e.target.value;
         setSearchName(searchName)
     }
@@ -124,11 +130,13 @@ function AddProduct() {
     }
 
     const searchByName = () => {
+        console.log('search name chamado');
         setCurrentIndex(-1);
         setCurrentProduct(null);
 
         ProducDataService.findByName(searchName)
             .then(response => {
+                console.log('search name no service', searchName);
                 setProducts(response.data)
                 console.log(response.data);
             })
@@ -159,11 +167,12 @@ function AddProduct() {
                     <div className="col-md-8">
                         <div className="input-group mb-3">
                             <input
+                                id='searchName'
                                 type="text"
                                 className="form-control"
                                 placeholder="Search by Name"
                                 value={searchName}
-                                onChange={onChangeSearchName}
+                                onChange={(e) => onChangeSearchName(e)}
                             />
                             <div className="input-group-append">
                                 <button
@@ -177,7 +186,7 @@ function AddProduct() {
                         </div>
                     </div>
                     <div className="col-md-6">
-                        <h4>Products List</h4>
+                        <h4>Lista de Produtos</h4>
                         <Dialog
                             open={open}
                             onClose={handleClose}
@@ -240,7 +249,7 @@ function AddProduct() {
                             className="m-3 btn btn-sm btn-danger"
                             onClick={removeAllProducts}
                         >
-                            Remove All
+                            Apagar todos
                         </button>
                     </div>
                     <div className="col-md-6">
@@ -248,13 +257,15 @@ function AddProduct() {
 
 
                         {currentProduct ? (
+                            
                             <div>
-                                <h4>Product</h4>
+                                {/* <h4>Produto</h4>
                                 <div>
                                     <label>
-                                        <strong>Title:</strong>
+                                        <strong>Nome:</strong>
                                     </label>{" "}
                                     {currentProduct.name}
+                                    
                                 </div>
                                 <div>
                                     <label>
@@ -262,16 +273,41 @@ function AddProduct() {
                                     </label>{" "}
                                     {currentProduct.id}
                                 </div>
+                                <div>
+                                    <label>
+                                        <strong>Id:</strong>
+                                    </label>{" "}
+                                    {currentProduct.id}
+                                    
+                                </div> */}
+                                <Card sx={{ maxWidth: 345 }}>
+                                  <CardActionArea>
+                                    <CardMedia
+                                      component="img"
+                                      height="300"
+                                      image={currentProduct.image}
+                                      alt={currentProduct.name}
+                                    />
+                                    <CardContent>
+                                      <Typography gutterBottom variant="h5" component="div">
+                                      {currentProduct.name}
+                                      </Typography>
+                                      <Typography variant="body2" color="text.secondary">
+                                        R$ {currentProduct.price}
+                                      </Typography>
+                                    </CardContent>
+                                  </CardActionArea>
+                                </Card>
 
 
-                                <Link to={`/products/${currentProduct.id}`} >Edit</Link>
+                                <Link to={`/products/${currentProduct.id}`} >Editar</Link>
 
 
                             </div>
                         ) : (
                             <div>
                                 <br />
-                                <p>Please click on a Product...</p>
+                                <p>Por favor selecione um produto...</p>
                             </div>
                         )}
                     </div>

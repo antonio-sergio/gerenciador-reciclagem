@@ -6,9 +6,9 @@ const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
   dialect: dbConfig.dialect,
   operatorsAliases: false,
   timezone: dbConfig.timezone,
-  dialectOptions: {
-      useUTC: false
-  },
+  // dialectOptions: {
+  //     useUTC: true
+  // },
   pool: {
     max: dbConfig.pool.max,
     min: dbConfig.pool.min,

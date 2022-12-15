@@ -6,7 +6,7 @@ class ProductDataService {
     }
 
     findByName(name) {
-        return http.get(`/products?name=${name}`);
+        return http.get(`/products/search?name=${name}`);
     }
 
     get(id) {

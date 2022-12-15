@@ -7,6 +7,7 @@ class Product extends Component {
     super(props);
     this.onChangeName = this.onChangeName.bind(this);
     this.onChangePrice = this.onChangePrice.bind(this);
+    this.onChangeImage = this.onChangeImage.bind(this);
     this.getProdut = this.getProduct.bind(this);
     this.updateProduct = this.updateProduct.bind(this);
     this.deleteProduct = this.deleteProduct.bind(this);
@@ -14,7 +15,8 @@ class Product extends Component {
     this.state = {
       currentProduct: {
         name: "",
-        price: ""
+        price: "",
+        image: ""
       },
       message: ""
     };
@@ -46,6 +48,17 @@ class Product extends Component {
         price: price
       }
     }));
+  
+  }
+  onChangeImage(e) {
+    const image = e.target.value;
+    
+    this.setState(prevState => ({
+      currentProduct: {
+        ...prevState.currentProduct,
+        image: image
+      }
+    }));
   }
 
   getProduct(id) {
@@ -70,7 +83,7 @@ class Product extends Component {
       .then(response => {
         console.log(response.data);
         this.setState({
-          message: "The product was updated successfully!"
+          message: "O produto foi alterado com sucesso!"
         });
       })
       .catch(e => {
@@ -96,10 +109,10 @@ class Product extends Component {
       <div>
         {currentProduct ? (
           <div className="edit-form">
-            <h4>Product</h4>
+            <h4>Produto</h4>
             <form>
               <div className="form-group">
-                <label htmlFor="title">Name</label>
+                <label htmlFor="title">Nome</label>
                 <input
                   type="text"
                   className="form-control"
@@ -109,13 +122,24 @@ class Product extends Component {
                 />
               </div>
               <div className="form-group">
-                <label htmlFor="price">Price</label>
+                <label htmlFor="price">Preço</label>
                 <input
                   type="text"
                   className="form-control"
                   id="price"
                   value={currentProduct.price}
                   onChange={this.onChangePrice}
+                />
+              </div>
+
+              <div className="form-group">
+                <label htmlFor="title">Imagem</label>
+                <input
+                  type="text"
+                  className="form-control"
+                  id="name"
+                  value={currentProduct.image}
+                  onChange={this.onChangeImage}
                 />
               </div>
 
@@ -126,7 +150,7 @@ class Product extends Component {
               className="badge bg-danger mr-2"
               onClick={this.deleteProduct}
             >
-              Delete
+              Deletar
             </button>
 
             <button
@@ -134,14 +158,14 @@ class Product extends Component {
               className="badge bg-success"
               onClick={this.updateProduct}
             >
-              Update
+              Alterar
             </button>
             <p>{this.state.message}</p>
           </div>
         ) : (
           <div>
             <br />
-            <p>Please click on a Product...</p>
+            <p>Selecione um produto para visualizar os dados</p>
           </div>
         )}
       </div>

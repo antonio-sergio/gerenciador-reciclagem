@@ -5,6 +5,7 @@ import "react-toastify/ReactToastify.min.css";
 function AddProduct() {
     const [name, setName] = useState('');
     const [price, setPrice] = useState('');
+    const [image, setImage] = useState('');
     const [submitted, setSubmitted] = useState(false);
     // const [id, setId] = useState(null);
     // constructor(props) {
@@ -45,10 +46,16 @@ function AddProduct() {
         setPrice(price);
     }
 
+    const onChangeImage = (e) => {
+        let image = e.target.value;
+        setImage(image);
+    }
+
     const saveProduct = () => {
         var data = {
             name: name,
-            price: price
+            price: price,
+            image: image
         };
         ProducDataService.create(data)
             .then(response => {
@@ -56,6 +63,7 @@ function AddProduct() {
                 // setId(response.data.id);
                 setName(response.data.name);
                 setPrice(response.data.price);
+                setImage(response.data.image);
                 setSubmitted(true);
                 addNotification();
             })
@@ -68,6 +76,7 @@ function AddProduct() {
         // setId(null);
         setName("");
         setPrice("");
+        setImage("");
         setSubmitted(false)
     }
 
@@ -112,6 +121,19 @@ function AddProduct() {
                                 value={price}
                                 onChange={onChangePrice}
                                 name="price"
+                            />
+                        </div>
+
+                        <div className="form-group">
+                            <label htmlFor="image">URL Imagem</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="image"
+                                required
+                                value={image}
+                                onChange={onChangeImage}
+                                name="image"
                             />
                         </div>
 

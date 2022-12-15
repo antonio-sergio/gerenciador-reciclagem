@@ -21,7 +21,8 @@ const getPagingData = (data, page, limit) => {
 exports.createProduct = (req, res ) => {
   const obj = {
     name: req.body.name,
-    price: req.body.price
+    price: req.body.price,
+    image: req.body.image
   }
   if(obj){
     return Product.create(obj)
@@ -58,11 +59,11 @@ exports.findAll = (req, res) => {
 // Find a single Product with an id
 exports.findOne = (req, res) => {
   const id = req.params.id;
-
+  console.log('id', id);
   Product.findByPk(id)
     .then(product => {
       console.log(product);
-      product ? res.send(product) : res.status(400).send("Product not found for the given id")
+      id ? res.send(product) : res.status(400).send("Product not found for the given id")
     })
     .catch(err => {
       res.status(500).send({
@@ -74,9 +75,11 @@ exports.findOne = (req, res) => {
 exports.findByName = (req, res) => {
   const name = req.query.name;
   var condition = name ? { name: { [Op.like]: `%${name}%` } } : null;
-
+  console.log('condição',condition);
+  
   Product.findAll({ where: condition })
-    .then(data => {
+  .then(data => {
+      console.log('chamou'), data;
       res.send(data);
     })
     .catch(err => {
