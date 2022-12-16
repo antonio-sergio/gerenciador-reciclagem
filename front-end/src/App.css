@@ -37,4 +37,13 @@
   }
 }
 
+:root {
+  --primary-color: #11cf9c;
+  --secondary-color: #09b7b3;
+}
 
+/*nav-bar*/
+.nav-bar {
+  min-height: 100vh;
+  background-image: linear-gradient(var(--primary-color), var(--secondary-color));
+}

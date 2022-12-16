@@ -1,118 +1,165 @@
 import ProducDataService from '../services/product.service';
-import React, { Component } from "react";
+import React, { Suspense, useState } from "react";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/ReactToastify.min.css";
+function AddProduct() {
+    const [name, setName] = useState('');
+    const [price, setPrice] = useState('');
+    const [image, setImage] = useState('');
+    const [submitted, setSubmitted] = useState(false);
+    // const [id, setId] = useState(null);
+    // constructor(props) {
+    //     super(props);
+    //     this.onChangeName = this.onChangeName.bind(this);
+    //     this.onChangePrice = this.onChangePrice.bind(this);
+    //     this.saveProduct = this.saveProduct.bind(this);
+    //     this.newProduct = this.newProduct.bind(this);
+    //     this.state = {
+    //         id: null,
+    //         name: "",
+    //         price: "",
 
-export default class AddProduct extends Component {
-    constructor(props) {
-        super(props);
-        this.onChangeName = this.onChangeName.bind(this);
-        this.onChangePrice = this.onChangePrice.bind(this);
-        this.saveProduct = this.saveProduct.bind(this);
-        this.newProduct = this.newProduct.bind(this);
-        this.state = {
-            id: null,
-            name: "",
-            price: "",
-
-            submitted: false
-        };
-    }
-
-    onChangeName(e) {
-        this.setState({
-            name: e.target.value
+    //         submitted: false
+    //     };
+    // }
+    const addNotification = () => {
+        // use a random type of notification
+        toast.success('🦄 Wow so easy!', {
+            position: "top-right",
+            autoClose: 5000,
+            hideProgressBar: false,
+            closeOnClick: true,
+            pauseOnHover: true,
+            draggable: true,
+            progress: undefined,
+            theme: "dark",
         });
+    };
+
+    const onChangeName = (e) => {
+        let name = e.target.value
+        setName(name);
     }
 
-    onChangePrice(e) {
-        this.setState({
-            price: e.target.value
-        });
+    const onChangePrice = (e) => {
+        let price = e.target.value;
+        setPrice(price);
     }
 
-    saveProduct() {
+    const onChangeImage = (e) => {
+        let image = e.target.value;
+        setImage(image);
+    }
+
+    const saveProduct = () => {
         var data = {
-            name: this.state.name,
-            price: this.state.price
+            name: name,
+            price: price,
+            image: image
         };
         ProducDataService.create(data)
             .then(response => {
-                this.setState({
-                    id: response.data.id,
-                    name: response.data.name,
-                    price: response.data.price,
-                    submitted: true
-                });
-                this.notify();
+                console.log(response);
+                // setId(response.data.id);
+                setName(response.data.name);
+                setPrice(response.data.price);
+                setImage(response.data.image);
+                setSubmitted(true);
+                addNotification();
             })
             .catch(e => {
                 console.log(e);
             });
     }
 
-    newProduct() {
-        this.setState({
-            id: null,
-            name: "",
-            price: "",
-
-            submitted: false
-        });
+    const newProduct = () => {
+        // setId(null);
+        setName("");
+        setPrice("");
+        setImage("");
+        setSubmitted(false)
     }
 
 
-    render() {
-        
-        return (
-            <>
-                <div className="submit-form">
-                    {this.state.submitted ? (
-                        <div>
-                            <h4>Produto adicionado com sucesso!</h4>
 
-                            <button className="btn btn-success" onClick={this.newProduct}>
-                                Add
-                            </button>
+    return (
+        <Suspense fallback="Loading...">
+            <div className="submit-form">
+                {submitted ? (
+                    <div>
+                        <h4>Produto adicionado com sucesso!</h4>
+
+                        <button className="btn btn-success" onClick={newProduct}>
+                            Add
+                        </button>
+                    </div>
+                ) : (
+                    <div>
+
+
+                        <button onClick={addNotification}>Notify</button>;
+                        <div className="form-group">
+                            <label htmlFor="title">Nome</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="name"
+                                required
+                                value={name}
+                                onChange={onChangeName}
+                                name="name"
+                            />
                         </div>
-                    ) : (
-                        <div>
 
-
-
-                            <div className="form-group">
-                                <label htmlFor="title">Nome</label>
-                                <input
-                                    type="text"
-                                    className="form-control"
-                                    id="name"
-                                    required
-                                    value={this.state.name}
-                                    onChange={this.onChangeName}
-                                    name="name"
-                                />
-                            </div>
-
-                            <div className="form-group">
-                                <label htmlFor="price">Preço</label>
-                                <input
-                                    type="number"
-                                    className="form-control"
-                                    id="price"
-                                    required
-                                    value={this.state.price}
-                                    onChange={this.onChangePrice}
-                                    name="price"
-                                />
-                            </div>
-
-                            <button onClick={this.saveProduct} className="btn btn-success">
-                                Adicionar
-                            </button>
-
+                        <div className="form-group">
+                            <label htmlFor="price">Preço</label>
+                            <input
+                                type="number"
+                                className="form-control"
+                                id="price"
+                                required
+                                value={price}
+                                onChange={onChangePrice}
+                                name="price"
+                            />
                         </div>
-                    )}
-                </div>
-            </>
 
-        );
-    }
-}
+                        <div className="form-group">
+                            <label htmlFor="image">URL Imagem</label>
+                            <input
+                                type="text"
+                                className="form-control"
+                                id="image"
+                                required
+                                value={image}
+                                onChange={onChangeImage}
+                                name="image"
+                            />
+                        </div>
+
+                        <button onClick={saveProduct} className="btn btn-success">
+                            Adicionar
+                        </button>
+                        <ToastContainer
+                            position="top-right"
+                            autoClose={5000}
+                            hideProgressBar={false}
+                            newestOnTop={false}
+                            closeOnClick
+                            rtl={false}
+                            pauseOnFocusLoss
+                            draggable
+                            pauseOnHover
+                            theme="dark"
+                        />
+                    </div>
+                )}
+            </div>
+
+
+
+        </Suspense>
+          
+)}
+
+export default AddProduct;
